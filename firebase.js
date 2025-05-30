@@ -11,8 +11,34 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-const app = initializeApp(firebaseConfig);
+// Log configuration (without sensitive data)
+console.log('Firebase Config:', {
+  authDomain: firebaseConfig.authDomain,
+  projectId: firebaseConfig.projectId,
+  storageBucket: firebaseConfig.storageBucket,
+  messagingSenderId: firebaseConfig.messagingSenderId,
+  appId: firebaseConfig.appId,
+  measurementId: firebaseConfig.measurementId
+});
+
+// Validate required configuration
+const requiredFields = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
+const missingFields = requiredFields.filter(field => !firebaseConfig[field]);
+
+if (missingFields.length > 0) {
+  console.error('Missing required Firebase configuration fields:', missingFields);
+  throw new Error(`Missing required Firebase configuration fields: ${missingFields.join(', ')}`);
+}
+
+let app;
+try {
+  app = initializeApp(firebaseConfig);
+} catch (error) {
+  console.error('Error initializing Firebase:', error);
+  throw error;
+}
+
 const googleProvider = new GoogleAuthProvider();
-const auth = getAuth()
+const auth = getAuth(app);
 
 export { app, googleProvider, auth }

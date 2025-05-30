@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { GoogleAuthProvider, getAuth } from 'firebase/auth'
+import { getAnalytics } from "firebase/analytics";
 
 // Validate environment variables
 const requiredEnvVars = {
@@ -32,8 +33,14 @@ const firebaseConfig = {
 };
 
 let app;
+let analytics;
+
 try {
   app = initializeApp(firebaseConfig);
+  // Initialize analytics only in browser environment
+  if (typeof window !== 'undefined') {
+    analytics = getAnalytics(app);
+  }
   console.log('Firebase initialized successfully');
 } catch (error) {
   console.error('Error initializing Firebase:', error);
@@ -48,4 +55,4 @@ googleProvider.setCustomParameters({
   prompt: 'select_account'
 });
 
-export { app, googleProvider, auth }
+export { app, googleProvider, auth, analytics }

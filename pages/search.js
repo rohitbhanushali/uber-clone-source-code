@@ -10,9 +10,20 @@ export default function Search() {
     const [loading, setLoading] = useState(false);
     const [selectedPickup, setSelectedPickup] = useState(null);
     const [selectedDropoff, setSelectedDropoff] = useState(null);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        if (!process.env.NEXT_PUBLIC_MAPBOX_TOKEN) {
+            setError('Mapbox token is missing. Please add NEXT_PUBLIC_MAPBOX_TOKEN to your .env.local file');
+        }
+    }, []);
 
     const searchLocation = async (query) => {
         if (!query) return [];
+        if (!process.env.NEXT_PUBLIC_MAPBOX_TOKEN) {
+            setError('Mapbox token is missing');
+            return [];
+        }
         
         try {
             const response = await fetch(
@@ -24,10 +35,15 @@ export default function Search() {
                 })
             );
             
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
             const data = await response.json();
             return data.features || [];
         } catch (error) {
             console.error('Error searching location:', error);
+            setError('Error searching location. Please try again.');
             return [];
         }
     };
@@ -82,6 +98,11 @@ export default function Search() {
 
     return (
         <Wrapper>
+            {error && (
+                <ErrorContainer>
+                    <ErrorMessage>{error}</ErrorMessage>
+                </ErrorContainer>
+            )}
             <ButtonContainer>
                 <Link href="/">
                     <BackButton src="https://img.icons8.com/ios-filled/50/000000/left.png" />
@@ -224,4 +245,12 @@ const StarIcon = tw.img`
 
 const ConfirmButton = tw.div`
     bg-black text-white text-center mt-4 mx-4 px-3 py-3 text-lg rounded-lg cursor-pointer hover:bg-gray-900 transition
+`;
+
+const ErrorContainer = tw.div`
+    bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4
+`;
+
+const ErrorMessage = tw.p`
+    text-sm
 `;

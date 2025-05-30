@@ -8,7 +8,7 @@ export default function RideSelector({ pickup, dropoff }) {
     useEffect(() => {
         if (!pickup || !dropoff) return;
 
-        fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${pickup[0]},${pickup[1]};${dropoff[0]},${dropoff[1]}?access_token=pk.eyJ1IjoiaWFuMDM4IiwiYSI6ImNrejRkdWVscDBmZzgyb28yOGVjazFkaWMifQ.rpr-o9cBKiJ2PGh8K8VzXA`)
+        fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${pickup[0]},${pickup[1]};${dropoff[0]},${dropoff[1]}?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}`)
           .then(res => res.json())
           .then(data => {
             console.log("Directions API Response:", data);

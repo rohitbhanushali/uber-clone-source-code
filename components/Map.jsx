@@ -2,6 +2,11 @@ import React, { useEffect, useState } from "react";
 import tw from "tailwind-styled-components";
 import mapboxgl from "!mapbox-gl";
 
+// Ensure Mapbox token is available
+if (!process.env.NEXT_PUBLIC_MAPBOX_TOKEN) {
+    console.error('Mapbox token is missing. Please add NEXT_PUBLIC_MAPBOX_TOKEN to your .env.local file');
+}
+
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
 export default function Map({ pickup, dropoff }) {

@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps } from "firebase/app";
 import { GoogleAuthProvider, getAuth } from 'firebase/auth'
 import { getAnalytics } from "firebase/analytics";
 
@@ -51,25 +51,47 @@ console.log('Firebase Config:', {
 
 let app;
 let analytics;
+let auth;
+let googleProvider;
 
 try {
-  app = initializeApp(firebaseConfig);
-  // Initialize analytics only in browser environment
+  // Check if Firebase is already initialized
+  if (!getApps().length) {
+    app = initializeApp(firebaseConfig);
+  } else {
+    app = getApps()[0];
+  }
+  
+  // Initialize Auth
+  auth = getAuth(app);
+  
+  // Initialize Google Provider
+  googleProvider = new GoogleAuthProvider();
+  googleProvider.setCustomParameters({
+    prompt: 'select_account'
+  });
+
+  // Initialize Analytics only in browser environment
   if (typeof window !== 'undefined') {
     analytics = getAnalytics(app);
   }
+
+  // Verify Firebase initialization
+  if (!app) {
+    throw new Error('Firebase app not initialized');
+  }
+
   console.log('Firebase initialized successfully');
 } catch (error) {
   console.error('Error initializing Firebase:', error);
+  // Log more detailed error information
+  if (error.code) {
+    console.error('Firebase error code:', error.code);
+  }
+  if (error.message) {
+    console.error('Firebase error message:', error.message);
+  }
   throw error;
 }
-
-const googleProvider = new GoogleAuthProvider();
-const auth = getAuth(app);
-
-// Configure Google Auth Provider
-googleProvider.setCustomParameters({
-  prompt: 'select_account'
-});
 
 export { app, googleProvider, auth, analytics }

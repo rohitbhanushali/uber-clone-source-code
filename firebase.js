@@ -65,10 +65,14 @@ try {
   // Initialize Auth
   auth = getAuth(app);
   
-  // Initialize Google Provider
+  // Initialize Google Provider with custom configuration
   googleProvider = new GoogleAuthProvider();
   googleProvider.setCustomParameters({
-    prompt: 'select_account'
+    prompt: 'select_account',
+    // Use the current origin for authentication
+    redirect_uri: typeof window !== 'undefined' ? window.location.origin : undefined,
+    // Add additional scopes if needed
+    scope: 'email profile'
   });
 
   // Initialize Analytics only in browser environment

@@ -41,4 +41,27 @@ module.exports = {
     };
     return config;
   },
+  // Allow images from any domain
+  images: {
+    domains: ['*'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+      {
+        protocol: 'http',
+        hostname: '**',
+      },
+    ],
+  },
+  // Configure server to accept any hostname
+  async rewrites() {
+    return [
+      {
+        source: '/:path*',
+        destination: '/:path*',
+      },
+    ]
+  },
 }
